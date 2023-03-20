@@ -17,8 +17,32 @@
             const valueCell = row.insertCell(1);
             const actionCell = row.insertCell(2);
 
-            keyCell.innerHTML = '<input type="text" class="key" onblur="validateKey(this)" required>';
-            valueCell.innerHTML = '<input type="text" class="value" required>';
+            const keyInput = document.createElement('input');
+            keyInput.type = 'text';
+            keyInput.className = 'key';
+            keyInput.onblur = () => validateKey(keyInput);
+            keyInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const nextValueInput = e.target.parentNode.nextElementSibling.firstElementChild;
+                    nextValueInput.focus();
+                }
+            };
+
+            const valueInput = document.createElement('input');
+            valueInput.type = 'text';
+            valueInput.className = 'value';
+            valueInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addRow();
+                    const newRow = table.rows[table.rows.length - 1];
+                    newRow.cells[0].firstElementChild.focus();
+                }
+            };
+
+            keyCell.appendChild(keyInput);
+            valueCell.appendChild(valueInput);
             actionCell.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
         }
 
@@ -51,7 +75,16 @@
                 try {
                     value = JSON.parse(value);
                 } catch (e) {
-                    // Leave value as string
+                    const lowerCase = value.toLowerCase();
+                    if (lowerCase === 'true') {
+                        value = true;
+                    } else if (lowerCase === 'false') {
+                        value = false;
+                    } else if (lowerCase == 'null' || lowerCase == 'none') {
+                        value = null;
+                    } else {
+                        // Leave value as string
+                    }
                 }
 
                 json[key] = value;
