@@ -63,6 +63,13 @@
             input.setCustomValidity("");
         }
 
+        function resetFields() {
+            const table = document.getElementById("jsonTable");
+            while (table.rows.length > 0) {
+                table.deleteRow(0);
+            }
+        }
+
         async function submitForm() {
             const json = {};
             const keys = document.getElementsByClassName("key");
@@ -102,8 +109,10 @@
                 const result = await response.json();
                 if (result.success) {
                     document.getElementById("result").innerText = "JSON processed successfully!";
+                    resetFields(); // Add this line to reset the fields
                 } else {
-                    document.getElementById("result").innerText = "Error processing JSON.";
+                    const errors = result.errors.join("\n");
+                    document.getElementById("result").innerText = `Error processing JSON:\n${errors}`;
                 }
             } else {
                 document.getElementById("result").innerText = "Error sending JSON data.";
