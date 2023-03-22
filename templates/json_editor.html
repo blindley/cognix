@@ -41,6 +41,27 @@
                 }
             };
 
+            const keyCheckbox = document.createElement('input');
+            keyCheckbox.type = 'checkbox';
+            keyCheckbox.className = 'key-checkbox';
+            keyCheckbox.onchange = () => {
+                if (!keyCheckbox.checked) {
+                    valueCheckbox.checked = false;
+                }
+            };
+
+            const valueCheckbox = document.createElement('input');
+            valueCheckbox.type = 'checkbox';
+            valueCheckbox.className = 'value-checkbox';
+            valueCheckbox.onchange = () => {
+                if (valueCheckbox.checked) {
+                    keyCheckbox.checked = true;
+                }
+            };
+
+            keyCell.prepend(keyCheckbox);
+            valueCell.prepend(valueCheckbox);
+
             keyCell.appendChild(keyInput);
             valueCell.appendChild(valueInput);
             actionCell.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
@@ -65,10 +86,22 @@
 
         function resetFields() {
             const table = document.getElementById("jsonTable");
-            while (table.rows.length > 0) {
-                table.deleteRow(0);
+            const keys = document.getElementsByClassName("key");
+            const values = document.getElementsByClassName("value");
+            const keyCheckboxes = document.getElementsByClassName("key-checkbox");
+            const valueCheckboxes = document.getElementsByClassName("value-checkbox");
+
+            for (let i = keys.length - 1; i >= 0; i--) {
+                if (!keyCheckboxes[i].checked) {
+                    table.deleteRow(i);
+                } else {
+                    if (!valueCheckboxes[i].checked) {
+                        values[i].value = "";
+                    }
+                }
             }
         }
+
 
         async function submitForm() {
             const json = {};
