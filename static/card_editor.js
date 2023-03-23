@@ -1,8 +1,22 @@
 
+function findAncestorWithClass(node, className) {
+    let current = node;
+
+    while (current !== null) {
+        if (current.classList && current.classList.contains(className)) {
+            return current;
+        }
+        current = current.parentNode;
+    }
+
+    return null;
+}
+
+
 function initFixedFields() {
     const fixedKeys = ['cognix.cardTemplate', 'cognix.instanceCount'];
     fixedKeys.forEach((key, index) => {
-        addRow(true, key, index === 0);
+        addRow(index === 0, key, true);
     });
 }
 
@@ -18,9 +32,16 @@ function validateKey(input) {
     input.setCustomValidity("");
 }
 
-function addRow(fixedKey = false, keyName = '', focus = false) {
+function deleteRow(node) {
+    row = findAncestorWithClass(node, "fieldRow");
+    row.parentNode.removeChild(row);
+}
+
+function addRow(focus = false, keyName = '', fixedKey = false) {
     const table = document.getElementById("cardDataTable");
     const row = table.insertRow(-1);
+    row.classList.add('fieldRow');
+
     const keyCell = row.insertCell(0);
     const valueCell = row.insertCell(1);
     const actionCell = row.insertCell(2);
@@ -45,9 +66,7 @@ function addRow(fixedKey = false, keyName = '', focus = false) {
     valueInput.onkeydown = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            addRow();
-            const newRow = table.rows[table.rows.length - 1];
-            newRow.cells[0].firstElementChild.focus();
+            addRow(true);
         }
     };
 
