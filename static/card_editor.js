@@ -1,6 +1,6 @@
 
 function initFixedFields() {
-    const fixedKeys = ['card-template', 'instance-count'];
+    const fixedKeys = ['cognix.cardTemplate', 'cognix.instanceCount'];
     fixedKeys.forEach((key, index) => {
         addRow(true, key, index === 0);
     });
@@ -19,7 +19,7 @@ function validateKey(input) {
 }
 
 function addRow(fixedKey = false, keyName = '', focus = false) {
-    const table = document.getElementById("jsonTable");
+    const table = document.getElementById("cardDataTable");
     const row = table.insertRow(-1);
     const keyCell = row.insertCell(0);
     const valueCell = row.insertCell(1);
@@ -86,7 +86,7 @@ function addRow(fixedKey = false, keyName = '', focus = false) {
 }
 
 function resetFields() {
-    const table = document.getElementById("jsonTable");
+    const table = document.getElementById("cardDataTable");
 
     for (let i = table.rows.length - 1; i >= 2; i--) { // Start from the index 2 to skip the fixed fields
         const row = table.rows[i];
@@ -132,7 +132,7 @@ async function submitForm() {
         json[key] = value;
     }
 
-    const response = await fetch('/process-json', {
+    const response = await fetch('/process-card-data', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -143,13 +143,13 @@ async function submitForm() {
     if (response.ok) {
         const result = await response.json();
         if (result.success) {
-            document.getElementById("result").innerText = "JSON processed successfully!";
+            document.getElementById("result").innerText = "Card data processed successfully!";
             resetFields(); // Add this line to reset the fields
         } else {
             const errors = result.errors.join("\n");
-            document.getElementById("result").innerText = `Error processing JSON:\n${errors}`;
+            document.getElementById("result").innerText = `Error processing Card data:\n${errors}`;
         }
     } else {
-        document.getElementById("result").innerText = "Error sending JSON data.";
+        document.getElementById("result").innerText = "Error sending Card data.";
     }
 }

@@ -3,10 +3,10 @@ from glob import glob
 
 app = Flask(__name__)
 
-def validate_json(json_data):
+def validate_card_data(card_data):
     errors = []
 
-    if 'uuid' in json_data:
+    if 'uuid' in card_data:
         errors.append("'uuid' is a special key. delete or rename this field")
 
     return errors if errors else None
@@ -16,16 +16,16 @@ def validate_json(json_data):
 def index():
     return render_template('card_editor.html')
 
-@app.route('/process-json', methods=['POST'])
+@app.route('/process-card-data', methods=['POST'])
 def process_json():
-    json_data = request.json
-    errors = validate_json(json_data)
+    card_data = request.json
+    errors = validate_card_data(card_data)
 
     if errors:
         return jsonify(success=False, errors=errors)
     else:
-        # Perform server-side processing on json_data as needed
-        print(json_data)
+        # Perform server-side processing on card_data as needed
+        print(card_data)
         return jsonify(success=True)
 
 
