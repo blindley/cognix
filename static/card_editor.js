@@ -14,10 +14,8 @@ function findAncestorWithClass(node, className) {
 
 
 function initFixedFields() {
-    const fixedKeys = ['cognix.cardTemplate', 'cognix.instanceCount'];
-    fixedKeys.forEach((key, index) => {
-        addRow(index === 0, key, true);
-    });
+    addRow(true, 'cognix.cardTemplate', 'cognix.basic', true);
+    addRow(false, 'cognix.instanceCount', 1, true);
 }
 
 function validateKey(input) {
@@ -37,7 +35,7 @@ function deleteRow(node) {
     row.parentNode.removeChild(row);
 }
 
-function addRow(focus = false, keyName = '', fixedKey = false) {
+function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
     const table = document.getElementById("cardDataTable");
     const row = table.insertRow(-1);
     row.classList.add('fieldRow');
@@ -49,7 +47,6 @@ function addRow(focus = false, keyName = '', fixedKey = false) {
     const keyInput = document.createElement('input');
     keyInput.type = 'text';
     keyInput.className = 'key';
-    keyInput.value = keyName;
     keyInput.disabled = fixedKey;
     keyInput.onblur = () => validateKey(keyInput);
     keyInput.onkeydown = (e) => {
@@ -95,6 +92,9 @@ function addRow(focus = false, keyName = '', fixedKey = false) {
         valueCell.prepend(valueCheckbox);
         actionCell.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
     }
+
+    keyInput.value = keyName || '';
+    valueInput.value = value || '';
 
     keyCell.appendChild(keyInput);
     valueCell.appendChild(valueInput);
