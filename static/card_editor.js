@@ -25,6 +25,8 @@ function deleteRow(node) {
 
 function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
     const table = document.getElementById("cardDataTable");
+    const rowIndex = table.rows.length;
+
     const row = table.insertRow(-1);
     row.classList.add('fieldRow');
 
@@ -49,7 +51,7 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
 
     const keyCheckbox = document.createElement('input');
     keyCheckbox.type = 'checkbox';
-    keyCheckbox.className = 'key-checkbox';
+    keyCheckbox.className = 'keyCheckbox';
     keyCheckbox.disabled = fixedKey;
     keyCheckbox.checked = fixedKey;
     keyCheckbox.onchange = () => {
@@ -60,7 +62,7 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
 
     const valueCheckbox = document.createElement('input');
     valueCheckbox.type = 'checkbox';
-    valueCheckbox.className = 'value-checkbox';
+    valueCheckbox.className = 'valueCheckbox';
     valueCheckbox.checked = fixedKey;
     valueCheckbox.onchange = () => {
         if (valueCheckbox.checked) {
