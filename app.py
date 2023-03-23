@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from glob import glob
 
 app = Flask(__name__)
 
@@ -13,7 +14,7 @@ def validate_json(json_data):
 
 @app.route('/')
 def index():
-    return render_template('json_editor.html')
+    return render_template('card_editor.html')
 
 @app.route('/process-json', methods=['POST'])
 def process_json():
@@ -29,4 +30,5 @@ def process_json():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    extra_files = glob('templates/*.*') + glob('static/*.*')
+    app.run(debug=True, extra_files=extra_files)

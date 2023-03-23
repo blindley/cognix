@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Editor</title>
+    <style>
+        input, button {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body onload="initFixedFields()">
+    <h1>Card Editor</h1>
+    <table id="jsonTable">
+    </table>
+    <button onclick="addRow()">Add Key-Value Pair</button>
+    <button onclick="submitForm()">Submit</button>
+    <h2>Result</h2>
+    <pre id="result"></pre>
+    <script src="{{ url_for('static', filename='card_editor.js') }}"></script>
+</body>
+</html>
