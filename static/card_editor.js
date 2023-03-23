@@ -32,7 +32,7 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
 
     const keyCell = row.insertCell(0);
     const valueCell = row.insertCell(1);
-    const actionCell = row.insertCell(2);
+    const deleteButtonCell = row.insertCell(2);
 
     const keyInput = document.createElement('input');
     keyInput.type = 'text';
@@ -74,7 +74,7 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
     valueCell.prepend(valueCheckbox);
 
     if (!fixedKey) {
-        actionCell.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
+        deleteButtonCell.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
     }
 
     keyInput.value = keyName || '';
