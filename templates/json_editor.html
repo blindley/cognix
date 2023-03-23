@@ -10,7 +10,26 @@
         }
     </style>
     <script>
-        function addRow() {
+        function initFixedFields() {
+            const fixedKeys = ['card-template', 'instance-count'];
+            fixedKeys.forEach((key, index) => {
+                addRow(true, key, index === 0);
+            });
+        }
+
+        function validateKey(input) {
+            const keys = document.getElementsByClassName("key");
+            for (let i = 0; i < keys.length; i++) {
+                if (keys[i] !== input && keys[i].value === input.value) {
+                    alert("Duplicate keys are not allowed!");
+                    input.setCustomValidity("Duplicate keys are not allowed!");
+                    return;
+                }
+            }
+            input.setCustomValidity("");
+        }
+
+        function addRow(fixedKey = false, keyName = '', focus = false) {
             const table = document.getElementById("jsonTable");
             const row = table.insertRow(-1);
             const keyCell = row.insertCell(0);
@@ -20,6 +39,8 @@
             const keyInput = document.createElement('input');
             keyInput.type = 'text';
             keyInput.className = 'key';
+            keyInput.value = keyName;
+            keyInput.disabled = fixedKey;
             keyInput.onblur = () => validateKey(keyInput);
             keyInput.onkeydown = (e) => {
                 if (e.key === 'Enter') {
@@ -44,6 +65,7 @@
             const keyCheckbox = document.createElement('input');
             keyCheckbox.type = 'checkbox';
             keyCheckbox.className = 'key-checkbox';
+            keyCheckbox.disabled = fixedKey;
             keyCheckbox.onchange = () => {
                 if (!keyCheckbox.checked) {
                     valueCheckbox.checked = false;
@@ -53,55 +75,46 @@
             const valueCheckbox = document.createElement('input');
             valueCheckbox.type = 'checkbox';
             valueCheckbox.className = 'value-checkbox';
+            valueCheckbox.disabled = fixedKey;
             valueCheckbox.onchange = () => {
                 if (valueCheckbox.checked) {
                     keyCheckbox.checked = true;
                 }
             };
 
-            keyCell.prepend(keyCheckbox);
-            valueCell.prepend(valueCheckbox);
+            if (!fixedKey) {
+                keyCell.prepend(keyCheckbox);
+                valueCell.prepend(valueCheckbox);
+                actionCell.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
+            }
 
             keyCell.appendChild(keyInput);
             valueCell.appendChild(valueInput);
-            actionCell.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
-        }
 
-        function deleteRow(button) {
-            const row = button.parentNode.parentNode;
-            row.parentNode.removeChild(row);
-        }
-
-        function validateKey(input) {
-            const keys = document.getElementsByClassName("key");
-            for (let i = 0; i < keys.length; i++) {
-                if (keys[i] !== input && keys[i].value === input.value) {
-                    alert("Duplicate keys are not allowed!");
-                    input.setCustomValidity("Duplicate keys are not allowed!");
-                    return;
-                }
+            if (focus) {
+                keyInput.focus();
             }
-            input.setCustomValidity("");
         }
 
         function resetFields() {
             const table = document.getElementById("jsonTable");
-            const keys = document.getElementsByClassName("key");
-            const values = document.getElementsByClassName("value");
-            const keyCheckboxes = document.getElementsByClassName("key-checkbox");
-            const valueCheckboxes = document.getElementsByClassName("value-checkbox");
 
-            for (let i = keys.length - 1; i >= 0; i--) {
-                if (!keyCheckboxes[i].checked) {
+            for (let i = table.rows.length - 1; i >= 2; i--) { // Start from the index 2 to skip the fixed fields
+                const row = table.rows[i];
+                const keyInput = row.cells[0].getElementsByTagName("input")[1]; // Get the key input
+                const valueInput = row.cells[1].getElementsByTagName("input")[1]; // Get the value input
+                const keyCheckbox = row.cells[0].getElementsByTagName("input")[0]; // Get the key checkbox
+                const valueCheckbox = row.cells[1].getElementsByTagName("input")[0]; // Get the value checkbox
+
+                if (!keyCheckbox.checked) {
                     table.deleteRow(i);
                 } else {
-                    if (!valueCheckboxes[i].checked) {
-                        values[i].value = "";
+                    if (!valueCheckbox.checked) {
+                        valueInput.value = "";
                     }
                 }
             }
         }
-
 
         async function submitForm() {
             const json = {};
@@ -153,7 +166,7 @@
         }
     </script>
 </head>
-<body>
+<body onload="initFixedFields()">
     <h1>JSON Editor</h1>
     <table id="jsonTable">
     </table>
