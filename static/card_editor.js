@@ -12,22 +12,10 @@ function findAncestorWithClass(node, className) {
     return null;
 }
 
-
 function initFixedFields() {
-    addRow(true, 'cognix.cardTemplate', 'cognix.basic', true);
+    addRow(false, 'cognix.cardTemplate', 'cognix.basic', true);
     addRow(false, 'cognix.instanceCount', 1, true);
-}
-
-function validateKey(input) {
-    const keys = document.getElementsByClassName("key");
-    for (let i = 0; i < keys.length; i++) {
-        if (keys[i] !== input && keys[i].value === input.value) {
-            alert("Duplicate keys are not allowed!");
-            input.setCustomValidity("Duplicate keys are not allowed!");
-            return;
-        }
-    }
-    input.setCustomValidity("");
+    document.getElementById("newFieldButton").focus();
 }
 
 function deleteRow(node) {
@@ -48,14 +36,6 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
     keyInput.type = 'text';
     keyInput.className = 'key';
     keyInput.disabled = fixedKey;
-    keyInput.onblur = () => validateKey(keyInput);
-    keyInput.onkeydown = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const nextValueInput = e.target.parentNode.nextElementSibling.firstElementChild;
-            nextValueInput.focus();
-        }
-    };
 
     const valueInput = document.createElement('input');
     valueInput.type = 'text';
@@ -71,6 +51,7 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
     keyCheckbox.type = 'checkbox';
     keyCheckbox.className = 'key-checkbox';
     keyCheckbox.disabled = fixedKey;
+    keyCheckbox.checked = fixedKey;
     keyCheckbox.onchange = () => {
         if (!keyCheckbox.checked) {
             valueCheckbox.checked = false;
@@ -80,16 +61,17 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
     const valueCheckbox = document.createElement('input');
     valueCheckbox.type = 'checkbox';
     valueCheckbox.className = 'value-checkbox';
-    valueCheckbox.disabled = fixedKey;
+    valueCheckbox.checked = fixedKey;
     valueCheckbox.onchange = () => {
         if (valueCheckbox.checked) {
             keyCheckbox.checked = true;
         }
     };
 
+    keyCell.prepend(keyCheckbox);
+    valueCell.prepend(valueCheckbox);
+
     if (!fixedKey) {
-        keyCell.prepend(keyCheckbox);
-        valueCell.prepend(valueCheckbox);
         actionCell.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
     }
 
@@ -100,7 +82,11 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
     valueCell.appendChild(valueInput);
 
     if (focus) {
-        keyInput.focus();
+        if (fixedKey) {
+            valueCheckbox.focus()
+        } else {
+            keyCheckbox.focus();
+        }
     }
 }
 
