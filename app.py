@@ -5,7 +5,7 @@ from uuid import uuid4
 
 app = Flask(__name__)
 
-def validate_card_data(card_data):
+def submit_card(card_data):
     errors = []
 
     card_uuid = str(uuid4())
@@ -21,7 +21,7 @@ def index():
 @app.route('/process-card-data', methods=['POST'])
 def process_json():
     card_data = request.json
-    errors = validate_card_data(card_data)
+    errors = submit_card(card_data)
 
     if errors:
         return jsonify(success=False, errors=errors)
