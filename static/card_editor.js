@@ -12,6 +12,20 @@ function findAncestorWithClass(node, className) {
     return null;
 }
 
+function initCardEditor() {
+    initFixedFields();
+
+    const cardDataElement = document.getElementById("cardData");
+    if (cardDataElement) {
+        const cardData = JSON.parse(cardDataElement.textContent);
+        for (const key in cardData) {
+            if (!["cognix.cardTemplate", "cognix.instanceCount"].includes(key)) {
+                addRow(false, key, cardData[key], false);
+            }
+        }
+    }
+}
+
 function initFixedFields() {
     addRow(false, 'cognix.cardTemplate', 'cognix.basic', true);
     addRow(false, 'cognix.instanceCount', 1, true);

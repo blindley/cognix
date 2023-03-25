@@ -59,3 +59,11 @@ def get_tables():
         tables[table_name] = rows
 
     return tables
+
+def get_card_by_uuid(card_uuid):
+    card = session.query(Card).filter(Card.uuid == card_uuid).one_or_none()
+    if card:
+        card_dict = json.loads(card.json)
+        return card_dict
+    else:
+        return None

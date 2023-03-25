@@ -13,9 +13,14 @@ def submit_card(card_data):
 
     return errors if errors else None
 
-@app.route('/card-editor')
-def index():
-    return render_template('card_editor.html')
+@app.route('/card-editor', defaults={'card_uuid': None})
+@app.route('/card-editor/<card_uuid>')
+def index(card_uuid):
+    card_data = None
+    if card_uuid:
+        card_data = card.get_card_by_uuid(card_uuid)
+    return render_template('card_editor.html', card_data=card_data)
+
 
 @app.route('/process-card-data', methods=['POST'])
 def process_json():
