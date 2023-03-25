@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
+from sqlalchemy import MetaData, Table
 from glob import glob
-from card import add_card, Card, Field, session
+from card import add_card, engine, session
 from uuid import uuid4
 
 app = Flask(__name__)
@@ -32,9 +33,19 @@ def process_json():
 
 @app.route('/data')
 def display_data():
-    cards = session.query(Card).all()
-    fields = session.query(Field).all()
-    return render_template('data.html', cards=cards, fields=fields)
+    metadata = MetaData()
+    metadata.reflect(bind=engine)
+
+    tables = {}
+    for table_name in metadata.tables:
+        table = Table(table_name, metadata, autoload=True, autoload_with=engine)
+        result = session.query(table).all()
+        keys = table.columns.keys()
+        rows = [dict(zip(keys, row)) for row in result]
+        tables[table_name] = rows
+
+    return render_template('data.html', tables=tables)
+
 
 
 if __name__ == '__main__':
