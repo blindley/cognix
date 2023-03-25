@@ -32,19 +32,30 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 def add_card(card_uuid, card_dict):
-
     if card_uuid is None:
         card_uuid = str(uuid.uuid4())
 
     card_json = json.dumps(card_dict)
-    card = Card(uuid=card_uuid, json=card_json)
-    session.add(card)
 
+    card = session.query(Card).filter(Card.uuid == card_uuid).first()
+    if card is None:
+        # Create a new card if it doesn't exist
+        card = Card(uuid=card_uuid, json=card_json)
+        session.add(card)
+    else:
+        # Update the existing card's JSON data
+        card.json = card_json
+
+    # Delete existing fields for the card
+    session.query(Field).filter(Field.uuid == card_uuid).delete()
+
+    # Add or update fields for the card
     for key, value in card_dict.items():
         field = Field(uuid=card_uuid, key=key, value=str(value))
         session.add(field)
 
     session.commit()
+
 
 def get_tables():
     metadata = MetaData()

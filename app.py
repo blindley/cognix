@@ -5,27 +5,29 @@ from uuid import uuid4
 
 app = Flask(__name__)
 
-def submit_card(card_data):
+def submit_card(card_uuid, card_data):
     errors = []
 
-    card_uuid = str(uuid4())
+    if not card_uuid:  # Check for None or empty string
+        card_uuid = str(uuid4())
     card.add_card(card_uuid, card_data)
 
     return errors if errors else None
 
 @app.route('/card-editor', defaults={'card_uuid': None})
 @app.route('/card-editor/<card_uuid>')
-def index(card_uuid):
+def card_editor(card_uuid):
     card_data = None
     if card_uuid:
         card_data = card.get_card_by_uuid(card_uuid)
-    return render_template('card_editor.html', card_data=card_data)
-
+    return render_template('card_editor.html', card_data=card_data, card_uuid=card_uuid)
 
 @app.route('/process-card-data', methods=['POST'])
 def process_json():
-    card_data = request.json
-    errors = submit_card(card_data)
+    request_data = request.json
+    card_uuid = request_data.get('uuid')
+    card_data = request_data.get('cardData')
+    errors = submit_card(card_uuid, card_data)
 
     if errors:
         return jsonify(success=False, errors=errors)

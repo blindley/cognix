@@ -13,7 +13,9 @@
 <body onload="initCardEditor()">
     {% if card_data %}
         <div id="cardData" style="display:none;">{{ card_data|tojson }}</div>
+        <div id="cardUUID" style="display:none;">{{ card_uuid }}</div>
     {% endif %}
+
 
     <h1>Card Editor</h1>
     <table id="cardDataTable">

@@ -127,7 +127,7 @@ function resetFields() {
 }
 
 async function submitForm() {
-    const json = {};
+    const cardData = {};
     const keys = document.getElementsByClassName("key");
     const values = document.getElementsByClassName("value");
 
@@ -135,15 +135,21 @@ async function submitForm() {
         const key = keys[i].value;
         const value = values[i].value;
 
-        json[key] = value;
+        cardData[key] = value;
     }
+
+    // Create a new object with the new structure
+    const requestData = {
+        uuid: document.getElementById("cardUUID") ? document.getElementById("cardUUID").textContent : null,
+        cardData: cardData
+    };
 
     const response = await fetch('/process-card-data', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(json)
+        body: JSON.stringify(requestData) // Update this line to use requestData instead of cardData
     });
 
     if (response.ok) {
