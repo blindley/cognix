@@ -140,7 +140,6 @@ async function submitForm() {
         cardData[key] = value;
     }
 
-    // Create a new object with the new structure
     const requestData = {
         uuid: document.getElementById("cardUUID") ? document.getElementById("cardUUID").textContent : null,
         cardData: cardData
@@ -151,14 +150,21 @@ async function submitForm() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(requestData) // Update this line to use requestData instead of cardData
+        body: JSON.stringify(requestData)
     });
 
     if (response.ok) {
         const result = await response.json();
         if (result.success) {
             document.getElementById("result").innerText = "Card data processed successfully!";
-            resetFields(); // Add this line to reset the fields
+            resetFields();
+
+            // Clear the UUID and update the address bar
+            if (document.getElementById("cardUUID")) {
+                document.getElementById("cardUUID").textContent = "";
+            }
+            window.history.pushState({}, "", "/card-editor");
+
         } else {
             const errors = result.errors.join("\n");
             document.getElementById("result").innerText = `Error processing Card data:\n${errors}`;
@@ -167,6 +173,7 @@ async function submitForm() {
         document.getElementById("result").innerText = "Error sending Card data.";
     }
 }
+
 
 async function searchCards() {
     const keys = document.getElementsByClassName("key");
