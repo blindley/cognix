@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify
-from sqlalchemy import MetaData, Table
 from glob import glob
-from card import add_card, engine, session
+import card
 from uuid import uuid4
 
 app = Flask(__name__)
@@ -10,12 +9,12 @@ def validate_card_data(card_data):
     errors = []
 
     card_uuid = str(uuid4())
-    add_card(card_uuid, card_data)
+    card.add_card(card_uuid, card_data)
 
     return errors if errors else None
 
 
-@app.route('/')
+@app.route('/card-editor')
 def index():
     return render_template('card_editor.html')
 
@@ -33,17 +32,7 @@ def process_json():
 
 @app.route('/data')
 def display_data():
-    metadata = MetaData()
-    metadata.reflect(bind=engine)
-
-    tables = {}
-    for table_name in metadata.tables:
-        table = Table(table_name, metadata, autoload=True, autoload_with=engine)
-        result = session.query(table).all()
-        keys = table.columns.keys()
-        rows = [dict(zip(keys, row)) for row in result]
-        tables[table_name] = rows
-
+    tables = card.get_tables()
     return render_template('data.html', tables=tables)
 
 

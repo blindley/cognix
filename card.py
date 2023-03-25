@@ -1,7 +1,8 @@
 import os
 import json
 import uuid
-from sqlalchemy import create_engine, Column, String, ForeignKey, TEXT, UniqueConstraint
+from sqlalchemy import (create_engine, Column, String, ForeignKey, TEXT,
+    UniqueConstraint, MetaData, Table)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
@@ -31,6 +32,7 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 def add_card(card_uuid, card_dict):
+
     if card_uuid is None:
         card_uuid = str(uuid.uuid4())
 
@@ -43,3 +45,17 @@ def add_card(card_uuid, card_dict):
         session.add(field)
 
     session.commit()
+
+def get_tables():
+    metadata = MetaData()
+    metadata.reflect(bind=engine)
+
+    tables = {}
+    for table_name in metadata.tables:
+        table = Table(table_name, metadata, autoload=True, autoload_with=engine)
+        result = session.query(table).all()
+        keys = table.columns.keys()
+        rows = [dict(zip(keys, row)) for row in result]
+        tables[table_name] = rows
+
+    return tables
