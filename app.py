@@ -13,7 +13,6 @@ def submit_card(card_data):
 
     return errors if errors else None
 
-
 @app.route('/card-editor')
 def index():
     return render_template('card_editor.html')
@@ -34,8 +33,6 @@ def process_json():
 def display_data():
     tables = card.get_tables()
     return render_template('data.html', tables=tables)
-
-
 
 if __name__ == '__main__':
     extra_files = glob('templates/*.*') + glob('static/*.*')
