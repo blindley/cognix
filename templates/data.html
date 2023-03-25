@@ -1,0 +1,29 @@
+<h1>Cards</h1>
+<table border="1">
+    <tr>
+        <th>UUID</th>
+        <th>JSON</th>
+    </tr>
+    {% for card in cards %}
+    <tr>
+        <td>{{ card.uuid }}</td>
+        <td>{{ card.json }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h1>Fields</h1>
+<table border="1">
+    <tr>
+        <th>UUID</th>
+        <th>Key</th>
+        <th>Value</th>
+    </tr>
+    {% for field in fields %}
+    <tr>
+        <td>{{ field.uuid }}</td>
+        <td>{{ field.key }}</td>
+        <td>{{ field.value }}</td>
+    </tr>
+    {% endfor %}
+</table>

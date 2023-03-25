@@ -1,13 +1,15 @@
 from flask import Flask, render_template, request, jsonify
 from glob import glob
+from card import add_card, Card, Field, session
+from uuid import uuid4
 
 app = Flask(__name__)
 
 def validate_card_data(card_data):
     errors = []
 
-    if 'uuid' in card_data:
-        errors.append("'uuid' is a special key. delete or rename this field")
+    card_uuid = str(uuid4())
+    add_card(card_uuid, card_data)
 
     return errors if errors else None
 
@@ -27,6 +29,12 @@ def process_json():
         # Perform server-side processing on card_data as needed
         print(card_data)
         return jsonify(success=True)
+
+@app.route('/data')
+def display_data():
+    cards = session.query(Card).all()
+    fields = session.query(Field).all()
+    return render_template('data.html', cards=cards, fields=fields)
 
 
 if __name__ == '__main__':

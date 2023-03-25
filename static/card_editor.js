@@ -119,22 +119,7 @@ async function submitForm() {
 
     for (let i = 0; i < keys.length; i++) {
         const key = keys[i].value;
-        let value = values[i].value;
-
-        try {
-            value = JSON.parse(value);
-        } catch (e) {
-            const lowerCase = value.toLowerCase();
-            if (lowerCase === 'true') {
-                value = true;
-            } else if (lowerCase === 'false') {
-                value = false;
-            } else if (lowerCase == 'null' || lowerCase == 'none') {
-                value = null;
-            } else {
-                // Leave value as string
-            }
-        }
+        const value = values[i].value;
 
         json[key] = value;
     }
