@@ -35,6 +35,13 @@ def process_json():
         # Perform server-side processing on card_data as needed
         print(card_data)
         return jsonify(success=True)
+    
+@app.route('/search-cards', methods=['POST'])
+def search_cards_route():
+    search_dict = request.json
+    matching_cards = card.search_cards(search_dict)
+    results = [{'uuid': card.uuid, 'json': card.json} for card in matching_cards]
+    return jsonify(results)
 
 @app.route('/data')
 def display_data():

@@ -20,10 +20,27 @@
     <h1>Card Editor</h1>
     <table id="cardDataTable">
     </table>
+
     <button id="newFieldButton" onclick="addRow(true)">New Field</button>
     <button onclick="submitForm()">Submit</button>
+    <button type="button" id="searchBtn" onclick="searchCards()">Search</button>
+
     <h2>Result</h2>
     <pre id="result"></pre>
+
+    <div id="searchResults">
+      <table border="1" id="resultsTable">
+        <thead>
+          <tr>
+            <th>UUID</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody id="searchResultsTableBody">
+        </tbody>
+      </table>
+    </div>
+
     <script src="{{ url_for('static', filename='card_editor.js') }}"></script>
 </body>
 </html>

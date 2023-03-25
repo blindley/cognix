@@ -64,12 +64,13 @@ def get_tables():
     tables = {}
     for table_name in metadata.tables:
         table = Table(table_name, metadata, autoload=True, autoload_with=engine)
-        result = session.query(table).all()
         keys = table.columns.keys()
+        result = session.query(table).all()
         rows = [dict(zip(keys, row)) for row in result]
-        tables[table_name] = rows
+        tables[table_name] = {'column_names': keys, 'rows': rows}
 
     return tables
+
 
 def get_card_by_uuid(card_uuid):
     card = session.query(Card).filter(Card.uuid == card_uuid).one_or_none()
@@ -78,3 +79,15 @@ def get_card_by_uuid(card_uuid):
         return card_dict
     else:
         return None
+
+def search_cards(search_dict):
+    # Find cards that match the search criteria
+    matching_card_uuids = set([card.uuid for card in session.query(Card).all()])
+    
+    for key, value in search_dict.items():
+        uuids_for_key_value = set([field.uuid for field in session.query(Field).filter(Field.key == key, Field.value == value).all()])
+        matching_card_uuids.intersection_update(uuids_for_key_value)
+
+    # Retrieve Card objects for the matching UUIDs
+    matching_cards = session.query(Card).filter(Card.uuid.in_(matching_card_uuids)).all()
+    return matching_cards

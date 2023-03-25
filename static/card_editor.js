@@ -65,9 +65,10 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
 
     const keyCheckbox = document.createElement('input');
     keyCheckbox.type = 'checkbox';
-    keyCheckbox.className = 'keyCheckbox';
+    keyCheckbox.className = 'stickyKeyCheckbox';
     keyCheckbox.disabled = fixedKey;
     keyCheckbox.checked = fixedKey;
+    keyCheckbox.title = 'Make key sticky'; // Add hover text
     keyCheckbox.onchange = () => {
         if (!keyCheckbox.checked) {
             valueCheckbox.checked = false;
@@ -76,8 +77,9 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
 
     const valueCheckbox = document.createElement('input');
     valueCheckbox.type = 'checkbox';
-    valueCheckbox.className = 'valueCheckbox';
+    valueCheckbox.className = 'stickyValueCheckbox';
     valueCheckbox.checked = fixedKey;
+    valueCheckbox.title = 'Make value sticky'; // Add hover text
     valueCheckbox.onchange = () => {
         if (valueCheckbox.checked) {
             keyCheckbox.checked = true;
@@ -165,3 +167,51 @@ async function submitForm() {
         document.getElementById("result").innerText = "Error sending Card data.";
     }
 }
+
+async function searchCards() {
+    const keys = document.getElementsByClassName("key");
+    const values = document.getElementsByClassName("value");
+    let searchDict = {};
+
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i].value;
+        const value = values[i].value;
+        
+        if (key && value) {
+            searchDict[key] = value;
+        }
+    }
+
+    const response = await fetch('/search-cards', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(searchDict)
+    });
+
+    const result = await response.json();
+    displaySearchResults(result);
+}
+
+
+function displaySearchResults(results) {
+    const tableBody = document.getElementById("searchResultsTableBody");
+    tableBody.innerHTML = "";
+  
+    for (const result of results) {
+        const row = document.createElement("tr");
+        
+        const uuidCell = document.createElement("td");
+        uuidCell.textContent = result.uuid;
+        row.appendChild(uuidCell);
+        
+        const jsonCell = document.createElement("td");
+        const parsedJson = JSON.parse(result.json);
+        jsonCell.textContent = JSON.stringify(parsedJson, null, 2);
+        row.appendChild(jsonCell);
+        
+        tableBody.appendChild(row);
+    }
+}
+  

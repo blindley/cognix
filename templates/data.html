@@ -14,23 +14,28 @@
 
 <h1>Database Tables</h1>
 
-{% for table_name, rows in tables.items() %}
+{% for table_name, table_data in tables.items() %}
     <h2>{{ table_name }}</h2>
     <table border="1">
-        <tr>
-            {% for column_name in rows[0].keys() %}
-                <th>{{ column_name }}</th>
-            {% endfor %}
-        </tr>
-        {% for row in rows %}
+        <thead>
             <tr>
-                {% for value in row.values() %}
-                    <td>{{ value }}</td>
+                {% for column_name in table_data.column_names %}
+                    <th>{{ column_name }}</th>
                 {% endfor %}
             </tr>
-        {% endfor %}
+        </thead>
+        <tbody>
+            {% for row in table_data.rows %}
+                <tr>
+                    {% for cell in row.values() %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
 {% endfor %}
+
 
 </body>
 </html>
