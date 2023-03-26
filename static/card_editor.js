@@ -145,7 +145,7 @@ async function submitForm() {
         cardData: cardData
     };
 
-    const response = await fetch('/process-card-data', {
+    const response = await fetch('/submit-card', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

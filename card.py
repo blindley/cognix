@@ -32,7 +32,9 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 def add_card(card_uuid, card_dict):
-    if card_uuid is None:
+    errors = []
+
+    if not card_uuid: # Check for None or empty string
         card_uuid = str(uuid.uuid4())
 
     card_json = json.dumps(card_dict)
@@ -55,6 +57,8 @@ def add_card(card_uuid, card_dict):
         session.add(field)
 
     session.commit()
+
+    return errors if errors else None
 
 
 def get_tables():
