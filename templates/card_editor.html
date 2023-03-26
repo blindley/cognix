@@ -12,31 +12,31 @@
 </head>
 <body onload="initCardEditor()">
     {% if card_data %}
-        <div id="cardData" style="display:none;">{{ card_data|tojson }}</div>
-        <div id="cardUUID" style="display:none;">{{ card_uuid }}</div>
+        <div id="card-data" style="display:none;">{{ card_data|tojson }}</div>
+        <div id="card-uuid" style="display:none;">{{ card_uuid }}</div>
     {% endif %}
 
 
     <h1>Card Editor</h1>
-    <table id="cardDataTable">
+    <table id="card-data-table">
     </table>
 
-    <button id="newFieldButton" onclick="addRow(true)">New Field</button>
+    <button id="new-field-button" onclick="addRow(true)">New Field</button>
     <button onclick="submitForm()">Submit</button>
-    <button type="button" id="searchBtn" onclick="searchCards()">Search</button>
+    <button type="button" id="search-button" onclick="searchCards()">Search</button>
 
     <h2>Result</h2>
     <pre id="result"></pre>
 
-    <div id="searchResults">
-      <table border="1" id="resultsTable">
+    <div id="search-results">
+      <table border="1" id="search-results-table">
         <thead>
           <tr>
             <th>UUID</th>
             <th>Data</th>
           </tr>
         </thead>
-        <tbody id="searchResultsTableBody">
+        <tbody id="search-results-table-body">
         </tbody>
       </table>
     </div>

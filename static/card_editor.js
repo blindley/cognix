@@ -15,7 +15,7 @@ function findAncestorWithClass(node, className) {
 function initCardEditor() {
     initFixedFields();
 
-    const cardDataElement = document.getElementById("cardData");
+    const cardDataElement = document.getElementById("card-data");
     if (cardDataElement) {
         const cardData = JSON.parse(cardDataElement.textContent);
         for (const key in cardData) {
@@ -29,20 +29,20 @@ function initCardEditor() {
 function initFixedFields() {
     addRow(false, 'cognix.cardTemplate', 'cognix.basic', true);
     addRow(false, 'cognix.instanceCount', 1, true);
-    document.getElementById("newFieldButton").focus();
+    document.getElementById("new-field-button").focus();
 }
 
 function deleteRow(node) {
-    row = findAncestorWithClass(node, "fieldRow");
+    row = findAncestorWithClass(node, "field-row");
     row.parentNode.removeChild(row);
 }
 
 function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
-    const table = document.getElementById("cardDataTable");
+    const table = document.getElementById("card-data-table");
     const rowIndex = table.rows.length;
 
     const row = table.insertRow(-1);
-    row.classList.add('fieldRow');
+    row.classList.add('field-row');
 
     const keyCell = row.insertCell(0);
     const valueCell = row.insertCell(1);
@@ -65,7 +65,7 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
 
     const keyCheckbox = document.createElement('input');
     keyCheckbox.type = 'checkbox';
-    keyCheckbox.className = 'stickyKeyCheckbox';
+    keyCheckbox.className = 'sticky-key-checkbox';
     keyCheckbox.disabled = fixedKey;
     keyCheckbox.checked = fixedKey;
     keyCheckbox.title = 'Make key sticky'; // Add hover text
@@ -77,7 +77,7 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
 
     const valueCheckbox = document.createElement('input');
     valueCheckbox.type = 'checkbox';
-    valueCheckbox.className = 'stickyValueCheckbox';
+    valueCheckbox.className = 'sticky-value-checkbox';
     valueCheckbox.checked = fixedKey;
     valueCheckbox.title = 'Make value sticky'; // Add hover text
     valueCheckbox.onchange = () => {
@@ -109,7 +109,7 @@ function addRow(focus = false, keyName = null, value = null, fixedKey = false) {
 }
 
 function resetFields() {
-    const table = document.getElementById("cardDataTable");
+    const table = document.getElementById("card-data-table");
 
     for (let i = table.rows.length - 1; i >= 2; i--) { // Start from the index 2 to skip the fixed fields
         const row = table.rows[i];
@@ -141,7 +141,7 @@ async function submitForm() {
     }
 
     const requestData = {
-        uuid: document.getElementById("cardUUID") ? document.getElementById("cardUUID").textContent : null,
+        uuid: document.getElementById("card-uuid") ? document.getElementById("card-uuid").textContent : null,
         cardData: cardData
     };
 
@@ -160,8 +160,8 @@ async function submitForm() {
             resetFields();
 
             // Clear the UUID and update the address bar
-            if (document.getElementById("cardUUID")) {
-                document.getElementById("cardUUID").textContent = "";
+            if (document.getElementById("card-uuid")) {
+                document.getElementById("card-uuid").textContent = "";
             }
             window.history.pushState({}, "", "/card-editor");
 
@@ -203,7 +203,7 @@ async function searchCards() {
 
 
 function displaySearchResults(results) {
-    const tableBody = document.getElementById("searchResultsTableBody");
+    const tableBody = document.getElementById("search-results-table-body");
     tableBody.innerHTML = "";
   
     for (const result of results) {
