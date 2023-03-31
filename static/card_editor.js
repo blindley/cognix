@@ -14,16 +14,6 @@ function findAncestorWithClass(node, className) {
 
 function initCardEditor() {
     initFixedFields();
-
-    const cardDataElement = document.getElementById("card-data");
-    if (cardDataElement) {
-        const cardData = JSON.parse(cardDataElement.textContent);
-        for (const key in cardData) {
-            if (!["cognix.cardTemplate", "cognix.instanceCount"].includes(key)) {
-                addRow(false, key, cardData[key], false);
-            }
-        }
-    }
 }
 
 function initFixedFields() {
@@ -140,85 +130,34 @@ async function submitForm() {
         cardData[key] = value;
     }
 
-    const requestData = {
-        uuid: document.getElementById("card-uuid") ? document.getElementById("card-uuid").textContent : null,
-        cardData: cardData
-    };
+    const apiRequest = {
+        "requests": [
+            {
+                "type": "newCard",
+                "data": cardData
+            }
+        ]
+    }
 
-    const response = await fetch('/submit-card', {
+    const response = await fetch('/api', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(requestData)
+        body: JSON.stringify(apiRequest)
     });
 
     if (response.ok) {
         const result = await response.json();
-        if (result.success) {
+        const apiResponse = result.responses[0];
+        if (apiResponse.status === "success") {
             document.getElementById("result").innerText = "Card data processed successfully!";
             resetFields();
-
-            // Clear the UUID and update the address bar
-            if (document.getElementById("card-uuid")) {
-                document.getElementById("card-uuid").textContent = "";
-            }
-            window.history.pushState({}, "", "/card-editor");
-
         } else {
-            const errors = result.errors.join("\n");
+            const errors = apiResponse.errors.join("\n");
             document.getElementById("result").innerText = `Error processing Card data:\n${errors}`;
         }
     } else {
         document.getElementById("result").innerText = "Error sending Card data.";
     }
 }
-
-
-async function searchCards() {
-    const keys = document.getElementsByClassName("key");
-    const values = document.getElementsByClassName("value");
-    let searchDict = {};
-
-    for (let i = 0; i < keys.length; i++) {
-        const key = keys[i].value;
-        const value = values[i].value;
-        
-        if (key && value) {
-            searchDict[key] = value;
-        }
-    }
-
-    const response = await fetch('/search-cards', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(searchDict)
-    });
-
-    const result = await response.json();
-    displaySearchResults(result);
-}
-
-
-function displaySearchResults(results) {
-    const tableBody = document.getElementById("search-results-table-body");
-    tableBody.innerHTML = "";
-  
-    for (const result of results) {
-        const row = document.createElement("tr");
-        
-        const uuidCell = document.createElement("td");
-        uuidCell.textContent = result.uuid;
-        row.appendChild(uuidCell);
-        
-        const jsonCell = document.createElement("td");
-        const parsedJson = JSON.parse(result.json);
-        jsonCell.textContent = JSON.stringify(parsedJson, null, 2);
-        row.appendChild(jsonCell);
-        
-        tableBody.appendChild(row);
-    }
-}
-  

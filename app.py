@@ -4,40 +4,64 @@ import card
 
 app = Flask(__name__)
 
-@app.route('/card-editor', defaults={'card_uuid': None})
-@app.route('/card-editor/<card_uuid>')
-def card_editor(card_uuid):
-    card_data = None
-    if card_uuid:
-        card_data = card.get_card_by_uuid(card_uuid)
-    return render_template('card_editor.html', card_data=card_data, card_uuid=card_uuid)
-
-@app.route('/submit-card', methods=['POST'])
-def process_json():
-    request_data = request.json
-    card_uuid = request_data.get('uuid')
-    card_data = request_data.get('cardData')
-
-    errors = card.add_card(card_uuid, card_data)
-
-    if errors:
-        return jsonify(success=False, errors=errors)
-    else:
-        # Perform server-side processing on card_data as needed
-        print(card_data)
-        return jsonify(success=True)
-    
-@app.route('/search-cards', methods=['POST'])
-def search_cards_route():
-    search_dict = request.json
-    matching_cards = card.search_cards(search_dict)
-    results = [{'uuid': card.uuid, 'json': card.json} for card in matching_cards]
-    return jsonify(results)
+@app.route('/card-editor')
+def card_editor():
+    return render_template('card_editor.html')
 
 @app.route('/data')
 def display_data():
     tables = card.get_tables()
     return render_template('data.html', tables=tables)
+
+
+def get_cards_handler(data):
+    card_list = []
+    for card_uuid in data:
+        card_data = card.get_card_by_uuid(card_uuid)
+        card_list.append(card_data)
+
+    return card_list
+
+def all_data_handler(data):
+    tables = card.get_tables()
+    return tables
+
+def new_card_handler(data):
+    result = card.add_card(None, data)
+    if result["errors"]:
+        return {"status": "error", "errors": result["errors"]}
+    else:
+        return {"status": "success", "uuid": result["uuid"]}
+
+
+# Create a dictionary mapping request types to handlers
+request_handlers = {
+    "getCards": get_cards_handler,
+    "allData": all_data_handler,
+    "newCard": new_card_handler
+}
+
+@app.route('/api', methods=['POST'])
+def process_requests():
+    req_data = request.get_json()
+    requests = req_data.get('requests', [])
+    responses = []
+
+    for req in requests:
+        req_type = req.get('type')
+        req_data = req.get('data')
+
+        handler = request_handlers.get(req_type)
+
+        if handler:
+            response = handler(req_data)
+        else:
+            response = {"error": f"Unrecognized request type: {req_type}"}
+
+        responses.append(response)
+
+    return jsonify({"responses": responses})
+
 
 if __name__ == '__main__':
     extra_files = glob('templates/*.*') + glob('static/*.*')

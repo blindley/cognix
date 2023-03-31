@@ -58,7 +58,11 @@ def add_card(card_uuid, card_dict):
 
     session.commit()
 
-    return errors if errors else None
+    if not errors:
+        errors = None
+    if errors:
+        card_uuid = None
+    return {"uuid": card_uuid, "errors": errors }
 
 
 def get_tables():

@@ -11,12 +11,6 @@
     </style>
 </head>
 <body onload="initCardEditor()">
-    {% if card_data %}
-        <div id="card-data" style="display:none;">{{ card_data|tojson }}</div>
-        <div id="card-uuid" style="display:none;">{{ card_uuid }}</div>
-    {% endif %}
-
-
     <h1>Card Editor</h1>
     <table id="card-data-table">
     </table>
@@ -27,19 +21,6 @@
 
     <h2>Result</h2>
     <pre id="result"></pre>
-
-    <div id="search-results">
-      <table border="1" id="search-results-table">
-        <thead>
-          <tr>
-            <th>UUID</th>
-            <th>Data</th>
-          </tr>
-        </thead>
-        <tbody id="search-results-table-body">
-        </tbody>
-      </table>
-    </div>
 
     <script src="{{ url_for('static', filename='card_editor.js') }}"></script>
 </body>
