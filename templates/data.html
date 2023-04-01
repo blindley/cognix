@@ -1,41 +1,94 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Database Tables</title>
-    <style>
-        table {border-collapse: collapse; width: 100%; margin-bottom: 20px;}
-        th, td {border: 1px solid black; padding: 8px; text-align: left;}
-        th {background-color: #f2f2f2;}
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Tables</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
 </head>
 <body>
+  <div id="tables-container"></div>
 
-<h1>Database Tables</h1>
+  <script>
+    async function fetchTables() {
+      const response = await fetch('/api', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "requests": [
+            {
+              "type": "allData"
+            }
+          ]
+        })
+      });
 
-{% for table_name, table_data in tables.items() %}
-    <h2>{{ table_name }}</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                {% for column_name in table_data.column_names %}
-                    <th>{{ column_name }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in table_data.rows %}
-                <tr>
-                    {% for cell in row.values() %}
-                        <td>{{ cell }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% endfor %}
+      const data = await response.json();
+      return data.responses[0];
+    }
 
+    function createTable(tableData) {
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      const tbody = document.createElement('tbody');
+      
+      // Create table header
+      const headerRow = document.createElement('tr');
+      tableData.column_names.forEach(colName => {
+        const th = document.createElement('th');
+        th.textContent = colName;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
 
+      // Create table body
+      tableData.rows.forEach(row => {
+        const tr = document.createElement('tr');
+        tableData.column_names.forEach(colName => {
+          const td = document.createElement('td');
+          td.textContent = row[colName];
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+
+      return table;
+    }
+
+    async function displayTables() {
+      const tablesContainer = document.getElementById('tables-container');
+      const tablesData = await fetchTables();
+
+      for (const tableName in tablesData) {
+        const tableData = tablesData[tableName];
+
+        const tableTitle = document.createElement('h2');
+        tableTitle.textContent = tableName;
+        tablesContainer.appendChild(tableTitle);
+
+        const table = createTable(tableData);
+        tablesContainer.appendChild(table);
+      }
+    }
+
+    displayTables();
+  </script>
 </body>
 </html>

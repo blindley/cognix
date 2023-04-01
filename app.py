@@ -1,11 +1,14 @@
 from flask import Flask, render_template
 from glob import glob
-import card
+import logging
 from api import api
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.register_blueprint(api, url_prefix='/api')
+
+log_format = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+logging.basicConfig(level=logging.DEBUG, format=log_format)
 
 @app.route('/card-editor')
 def card_editor():
@@ -13,8 +16,7 @@ def card_editor():
 
 @app.route('/data')
 def display_data():
-    tables = card.get_tables()
-    return render_template('data.html', tables=tables)
+    return render_template('data.html')
 
 if __name__ == '__main__':
     extra_files = glob('templates/*.*') + glob('static/*.*')
