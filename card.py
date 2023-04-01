@@ -64,6 +64,10 @@ def add_card(card_uuid, card_dict):
         card_uuid = None
     return {"uuid": card_uuid, "errors": errors }
 
+def delete_cards(card_uuids):
+    session.query(Field).filter(Field.uuid.in_(card_uuids)).delete(synchronize_session='fetch')
+    session.query(Card).filter(Card.uuid.in_(card_uuids)).delete(synchronize_session='fetch')
+    session.commit()
 
 def get_tables():
     metadata = MetaData()

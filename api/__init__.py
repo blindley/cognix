@@ -21,13 +21,20 @@ def new_card_handler(data):
         return {"status": "error", "errors": result["errors"]}
     else:
         return {"status": "success", "uuid": result["uuid"]}
-
+    
+def delete_cards_handler(data):
+    try:
+        card.delete_cards(data)
+        return {"status": "success"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 # Create a dictionary mapping request types to handlers
 request_handlers = {
     "getCards": get_cards_handler,
     "allData": all_data_handler,
-    "newCard": new_card_handler
+    "newCard": new_card_handler,
+    "deleteCards": delete_cards_handler,
 }
 
 @api.route('/', methods=['POST'])
