@@ -1,8 +1,11 @@
 from flask import Flask, render_template, request, jsonify
 from glob import glob
 import card
+from api2 import api2
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
+app.register_blueprint(api2)
 
 @app.route('/card-editor')
 def card_editor():
