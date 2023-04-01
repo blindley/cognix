@@ -44,11 +44,16 @@
 
     function createTable(tableData) {
       const table = document.createElement('table');
+      table.setAttribute('data-table-name', tableData.name);
       const thead = document.createElement('thead');
       const tbody = document.createElement('tbody');
       
       // Create table header
       const headerRow = document.createElement('tr');
+      if (tableData.name === 'card') {
+        const thCheckbox = document.createElement('th');
+        headerRow.appendChild(thCheckbox);
+      }
       tableData.column_names.forEach(colName => {
         const th = document.createElement('th');
         th.textContent = colName;
@@ -60,6 +65,14 @@
       // Create table body
       tableData.rows.forEach(row => {
         const tr = document.createElement('tr');
+        if (tableData.name === 'card') {
+          const tdCheckbox = document.createElement('td');
+          const inputCheckbox = document.createElement('input');
+          inputCheckbox.type = 'checkbox';
+          inputCheckbox.value = row.uuid;
+          tdCheckbox.appendChild(inputCheckbox);
+          tr.appendChild(tdCheckbox);
+        }
         tableData.column_names.forEach(colName => {
           const td = document.createElement('td');
           td.textContent = row[colName];
@@ -83,9 +96,58 @@
         tableTitle.textContent = tableName;
         tablesContainer.appendChild(tableTitle);
 
-        const table = createTable(tableData);
+        const table = createTable({ ...tableData, name: tableName });
         tablesContainer.appendChild(table);
+
+        if (tableName === 'card') {
+          const deleteButton = document.createElement('button');
+          deleteButton.id = 'delete-btn';
+          deleteButton.textContent = 'Delete Selected Cards';
+          
+          deleteButton.addEventListener('click', async () => {
+            const cardTable = document.querySelector('[data-table-name="card"]');
+            const checkboxes = cardTable.querySelectorAll('input[type="checkbox"]:checked');
+            const cardUUIDs = Array.from(checkboxes).map(checkbox => checkbox.value);
+            
+            if (cardUUIDs.length === 0) {
+              alert('No cards selected for deletion.');
+              return;
+            }
+
+            const result = await deleteCards(cardUUIDs);
+            
+            if (result.status === 'success') {
+              alert('Cards deleted successfully.');
+              location.reload();
+            } else {
+              alert('An error occurred while deleting cards.');
+            }
+          });
+
+          tablesContainer.appendChild(deleteButton);
+        }
       }
+    }
+
+
+    async function deleteCards(cardUUIDs) {
+      const response = await fetch('/api', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "requests": [
+            {
+              "type": "deleteCards",
+              "data": cardUUIDs
+            }
+          ]
+        })
+      });
+
+      const data = await response.json();
+      return data.responses[0];
     }
 
     displayTables();
