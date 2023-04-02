@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template
+import os
 
-ui = Blueprint('ui', __name__)
+template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+ui = Blueprint('ui', __name__, template_folder=template_dir)
 
 @ui.route('/card-editor')
 def card_editor():
