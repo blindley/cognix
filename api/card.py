@@ -25,7 +25,11 @@ class Field(Base):
 
     __table_args__ = (UniqueConstraint('uuid', 'key', name='uix_uuid_key'),)
 
-db_url = os.environ.get('COGNIXDB', 'sqlite:///../cognix.db')
+try:
+    db_url = os.environ.__getitem__('COGNIXDB')
+except KeyError:
+    raise ValueError('The COGNIXDB environment variable is not set')
+
 engine = create_engine(db_url)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
